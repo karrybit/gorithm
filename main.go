@@ -77,7 +77,7 @@ func absI(i int) int {
 	return int(math.Abs(float64(i)))
 }
 
-func appendFront(i int, v []int) []int {
+func appendFrontI(i int, v []int) []int {
 	return append([]int{i}, v...)
 }
 
