@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"strconv"
 )
 
 var r = bufio.NewReader(os.Stdin)
@@ -76,6 +77,10 @@ func scanVectorS(length int, vv ...[]string) {
 
 // ---------- print ----------
 func printV(v ...interface{}) {
+	fmt.Fprint(w, v...)
+}
+
+func printlnV(v ...interface{}) {
 	fmt.Fprintln(w, v...)
 }
 
@@ -88,8 +93,35 @@ func printDebugV(v ...interface{}) {
 	for i := 0; i < len(v); i++ {
 		format += "%+v "
 	}
-	format += "\n"
-	fmt.Fprintf(w, format, v...)
+	printF(format+"\n", v...)
+}
+
+func printDebugMetrix(v [][]int) {
+	digit := len(strconv.Itoa(len(v)))
+	format := "%" + strconv.Itoa(digit) + "d"
+
+	header := "  "
+	for i := 0; i < digit; i++ {
+		header += " "
+	}
+
+	columnNumber := make([]interface{}, len(v))
+	for i := 0; i < len(v); i++ {
+		header += format + " "
+		columnNumber[i] = i
+	}
+	printF(header+"\n", columnNumber...)
+
+	for i := 0; i < len(v); i++ {
+		printF(format+" [", i)
+		for j := 0; j < len(v[i]); j++ {
+			printF(format, v[i][j])
+			if j < len(v[i])-1 {
+				printF(" ")
+			}
+		}
+		printlnV("]")
+	}
 }
 
 func printIF(cond bool, t interface{}, e interface{}) {
