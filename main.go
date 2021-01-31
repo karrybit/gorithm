@@ -255,6 +255,24 @@ func buildAdjacencyMatrixI(size int, a, b []int, isDirect bool) [][]int {
 	return vec
 }
 
+func copyMatrixI(src [][]int) [][]int {
+	dst := make([][]int, len(src))
+	for i, v := range src {
+		dst[i] = make([]int, len(v))
+		copy(dst[i], v)
+	}
+	return dst
+}
+
+func copyMatrixR(src [][]rune) [][]rune {
+	dst := make([][]rune, len(src))
+	for i, v := range src {
+		dst[i] = make([]rune, len(v))
+		copy(dst[i], v)
+	}
+	return dst
+}
+
 type Pair struct {
 	x, y int
 }
