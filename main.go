@@ -96,7 +96,7 @@ func printDebugV(v ...interface{}) {
 	printF(format+"\n", v...)
 }
 
-func printDebugMetrix(v [][]int) {
+func printDebugMetrixI(v [][]int) {
 	digit := len(strconv.Itoa(len(v)))
 	format := "%" + strconv.Itoa(digit) + "d"
 
@@ -112,11 +112,32 @@ func printDebugMetrix(v [][]int) {
 	}
 	printF(header+"\n", columnNumber...)
 
-	for i := 0; i < len(v); i++ {
-		printF(format+" [", i)
-		for j := 0; j < len(v[i]); j++ {
-			printF(format, v[i][j])
-			if j < len(v[i])-1 {
+	for row := 0; row < len(v); row++ {
+		printF(format+" [", row)
+		for column := 0; column < len(v[row]); column++ {
+			printF(format, v[row][column])
+			if column < len(v[row])-1 {
+				printF(" ")
+			}
+		}
+		printlnV("]")
+	}
+}
+
+func printDebugMetrixS(v []string) {
+	header := "   "
+	columnNumber := make([]interface{}, len(v[0]))
+	for i := 0; i < len(v[0]); i++ {
+		header += "%d "
+		columnNumber[i] = i
+	}
+	printF(header+"\n", columnNumber...)
+
+	for row := 0; row < len(v); row++ {
+		printF("%d [", row)
+		for column := 0; column < len(v[row]); column++ {
+			printF("%s", string(v[row][column]))
+			if column < len(v[row])-1 {
 				printF(" ")
 			}
 		}
