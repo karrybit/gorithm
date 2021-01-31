@@ -36,12 +36,12 @@ func scanSliceI(v []int) {
 	}
 }
 
-func scanVectorI(length int, vv ...[]int) {
-	for row := 0; row < length; row++ {
-		for column := 0; column < len(vv); column++ {
-			scanIPs(&vv[column][row])
-		}
+func scanVectorI(size int) ([]int, []int) {
+	x, y := make([]int, size), make([]int, size)
+	for row := 0; row < size; row++ {
+		x[row], y[row] = scanI(), scanI()
 	}
+	return x, y
 }
 
 func scanS() string {
