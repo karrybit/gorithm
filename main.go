@@ -11,6 +11,9 @@ import (
 var r = bufio.NewReader(os.Stdin)
 var w = bufio.NewWriter(os.Stdout)
 
+var X_VEC = [4]int{0, 1, 0, -1}
+var Y_VEC = [4]int{1, 0, -1, 0}
+
 // ---------- scan ----------
 func scanI() int {
 	var v int
@@ -77,10 +80,6 @@ func scanVectorS(length int, vv ...[]string) {
 
 // ---------- print ----------
 func printV(v ...interface{}) {
-	fmt.Fprint(w, v...)
-}
-
-func printlnV(v ...interface{}) {
 	fmt.Fprintln(w, v...)
 }
 
@@ -120,7 +119,7 @@ func printDebugMetrixI(v [][]int) {
 				printF(" ")
 			}
 		}
-		printlnV("]")
+		printV("]")
 	}
 }
 
@@ -141,7 +140,7 @@ func printDebugMetrixR(v [][]rune) {
 				printF(" ")
 			}
 		}
-		printlnV("]")
+		printV("]")
 	}
 }
 
@@ -162,7 +161,7 @@ func printDebugMetrixS(v []string) {
 				printF(" ")
 			}
 		}
-		printlnV("]")
+		printV("]")
 	}
 }
 
@@ -254,6 +253,10 @@ func buildAdjacencyMatrixI(size int, a, b []int, isDirect bool) [][]int {
 		}
 	}
 	return vec
+}
+
+type Pair struct {
+	x, y int
 }
 
 func main() {
