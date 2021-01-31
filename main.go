@@ -124,6 +124,27 @@ func printDebugMetrixI(v [][]int) {
 	}
 }
 
+func printDebugMetrixR(v [][]rune) {
+	header := "   "
+	columnNumber := make([]interface{}, len(v[0]))
+	for i := 0; i < len(v[0]); i++ {
+		header += "%d "
+		columnNumber[i] = i
+	}
+	printF(header+"\n", columnNumber...)
+
+	for row := 0; row < len(v); row++ {
+		printF("%d [", row)
+		for column := 0; column < len(v[row]); column++ {
+			printF("%s", string(v[row][column]))
+			if column < len(v[row])-1 {
+				printF(" ")
+			}
+		}
+		printlnV("]")
+	}
+}
+
 func printDebugMetrixS(v []string) {
 	header := "   "
 	columnNumber := make([]interface{}, len(v[0]))
