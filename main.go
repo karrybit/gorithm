@@ -14,68 +14,73 @@ var w = bufio.NewWriter(os.Stdout)
 var X_VEC = [4]int{0, 1, 0, -1}
 var Y_VEC = [4]int{1, 0, -1, 0}
 
+// ---------- input handler ----------
+var MINUS = func(i int) int {
+	return i - 1
+}
+
 // ---------- scan ----------
-func scanI() int {
+func scanI(f func(i int) int) int {
 	var v int
 	fmt.Fscan(r, &v)
+	if f != nil {
+		v = f(v)
+	}
 	return v
 }
 
-func scanMakeSliceI(n int) []int {
+func scanMakeSliceI(n int, f func(i int) int) []int {
 	arr := make([]int, n)
-	scanSliceI(arr)
+	scanSliceI(arr, f)
 	return arr
 }
 
-func scanIPs(is ...*int) {
-	for i := 0; i < len(is); i++ {
-		*is[i] = scanI()
-	}
-}
-
-func scanSliceI(v []int) {
+func scanSliceI(v []int, f func(i int) int) {
 	for i := 0; i < len(v); i++ {
 		fmt.Fscan(r, &v[i])
+		if f != nil {
+			v[i] = f(v[i])
+		}
 	}
 }
 
-func scanVectorI(size int) ([]int, []int) {
+func scanVectorI(size int, f func(i int) int) ([]int, []int) {
 	x, y := make([]int, size), make([]int, size)
 	for row := 0; row < size; row++ {
-		x[row], y[row] = scanI(), scanI()
+		x[row], y[row] = scanI(f), scanI(f)
 	}
 	return x, y
 }
 
-func scanS() string {
+func scanS(f func(s string) string) string {
 	var v string
 	fmt.Fscan(r, &v)
+	if f != nil {
+		return f(v)
+	}
 	return v
 }
 
-func scanMakeSliceS(n int) []string {
-	return scanSliceS(make([]string, n))
+func scanMakeSliceS(n int, f func(s string) string) []string {
+	return scanSliceS(make([]string, n), f)
 }
 
-func scanSPs(ss ...*string) {
-	for i := 0; i < len(ss); i++ {
-		*ss[i] = scanS()
-	}
-}
-
-func scanSliceS(v []string) []string {
+func scanSliceS(v []string, f func(s string) string) []string {
 	for i := 0; i < len(v); i++ {
 		fmt.Fscan(r, &v[i])
+		if f != nil {
+			v[i] = f(v[i])
+		}
 	}
 	return v
 }
 
-func scanVectorS(length int, vv ...[]string) {
-	for row := 0; row < length; row++ {
-		for column := 0; column < len(vv); column++ {
-			scanSPs(&vv[column][row])
-		}
+func scanVectorS(size int, f func(s string) string) []string {
+	vec := make([]string, size)
+	for i := 0; i < size; i++ {
+		vec[i] = scanS(f)
 	}
+	return vec
 }
 
 // ---------- print ----------
@@ -238,15 +243,15 @@ func containR(target rune, array []rune) bool {
 	return false
 }
 
-func buildAdjacencyMatrixI(size int, a, b []int, isDirect bool) [][]int {
+func buildAdjacencyMatrixI(size int, srcNodes, dstNodes []int, isDirect bool) [][]int {
 	size += 1
 	vec := make([][]int, size)
 	for i := 0; i < size; i++ {
 		vec[i] = make([]int, size)
 	}
 
-	for i := 0; i < len(a); i++ {
-		from, to := a[i], b[i]
+	for i := 0; i < len(srcNodes); i++ {
+		from, to := srcNodes[i], dstNodes[i]
 		vec[from][to] = 1
 		if !isDirect {
 			vec[to][from] = 1
