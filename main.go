@@ -75,12 +75,15 @@ func scanSliceS(v []string, f func(s string) string) []string {
 	return v
 }
 
-func scanVectorS(rowSize, columnSize int, f func(s string) string) [][]rune {
+func scanVectorS(rowSize, columnSize int, f func(r rune) rune) [][]rune {
 	vec := make([][]rune, rowSize)
 	for i := 0; i < rowSize; i++ {
 		vec[i] = make([]rune, columnSize)
-		s := scanS(f)
+		s := scanS(nil)
 		for j, r := range s {
+			if f != nil {
+				r = f(r)
+			}
 			vec[i][j] = r
 		}
 	}
