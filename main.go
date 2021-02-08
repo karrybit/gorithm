@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -11,8 +12,8 @@ import (
 var r = bufio.NewReader(os.Stdin)
 var w = bufio.NewWriter(os.Stdout)
 
-var X_VEC = [4]int{0, 1, 0, -1}
-var Y_VEC = [4]int{1, 0, -1, 0}
+var COORD4 = [4]Pair{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}
+var COORD8 = [8]Pair{{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}}
 
 // ---------- input handler ----------
 var MINUS = func(i int) int {
@@ -75,10 +76,14 @@ func scanSliceS(v []string, f func(s string) string) []string {
 	return v
 }
 
-func scanVectorS(size int, f func(s string) string) []string {
-	vec := make([]string, size)
-	for i := 0; i < size; i++ {
-		vec[i] = scanS(f)
+func scanVectorS(rowSize, columnSize int, f func(s string) string) [][]rune {
+	vec := make([][]rune, rowSize)
+	for i := 0; i < rowSize; i++ {
+		vec[i] = make([]rune, columnSize)
+		ss := scanS(f)
+		for j, s := range ss {
+			vec[i][j] = s
+		}
 	}
 	return vec
 }
@@ -129,27 +134,6 @@ func printDebugMetrixI(v [][]int) {
 }
 
 func printDebugMetrixR(v [][]rune) {
-	header := "   "
-	columnNumber := make([]interface{}, len(v[0]))
-	for i := 0; i < len(v[0]); i++ {
-		header += "%d "
-		columnNumber[i] = i
-	}
-	printF(header+"\n", columnNumber...)
-
-	for row := 0; row < len(v); row++ {
-		printF("%d [", row)
-		for column := 0; column < len(v[row]); column++ {
-			printF("%s", string(v[row][column]))
-			if column < len(v[row])-1 {
-				printF(" ")
-			}
-		}
-		printV("]")
-	}
-}
-
-func printDebugMetrixS(v []string) {
 	header := "   "
 	columnNumber := make([]interface{}, len(v[0]))
 	for i := 0; i < len(v[0]); i++ {
@@ -279,7 +263,67 @@ func copyMatrixR(src [][]rune) [][]rune {
 }
 
 type Pair struct {
-	x, y int
+	y, x int
+}
+
+type QueueInt struct {
+	inner []int
+}
+
+func newQueueInt(a []int) QueueInt {
+	return QueueInt{inner: a}
+}
+
+func (q *QueueInt) pop() (*int, error) {
+	if len(q.inner) == 0 {
+		return nil, errors.New("queue is empty")
+	} else if len(q.inner) == 1 {
+		var v *int
+		v, q.inner = &q.inner[0], []int{}
+		return v, nil
+	} else {
+		var v *int
+		v, q.inner = &q.inner[0], q.inner[1:]
+		return v, nil
+	}
+}
+
+func (q *QueueInt) push(v int) {
+	q.inner = append(q.inner, v)
+}
+
+func (q *QueueInt) isEmpty() bool {
+	return len(q.inner) == 0
+}
+
+type QueuePair struct {
+	inner []Pair
+}
+
+func newQueuePair(a []Pair) QueuePair {
+	return QueuePair{inner: a}
+}
+
+func (q *QueuePair) pop() (*Pair, error) {
+	if len(q.inner) == 0 {
+		return nil, errors.New("queue is empty")
+	} else if len(q.inner) == 1 {
+		var v *Pair
+		v, q.inner = &q.inner[0], []Pair{}
+		return v, nil
+	} else {
+		var v *Pair
+		v, q.inner = &q.inner[0], q.inner[1:]
+		return v, nil
+	}
+}
+
+func (q *QueuePair) push(v Pair) {
+	q.inner = append(q.inner, v)
+}
+
+func (q *QueuePair) isEmpty() bool {
+	return len(q.inner) == 0
 }
 
 func main() {
