@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -80,9 +79,9 @@ func scanVectorS(rowSize, columnSize int, f func(s string) string) [][]rune {
 	vec := make([][]rune, rowSize)
 	for i := 0; i < rowSize; i++ {
 		vec[i] = make([]rune, columnSize)
-		ss := scanS(f)
-		for j, s := range ss {
-			vec[i][j] = s
+		s := scanS(f)
+		for j, r := range s {
+			vec[i][j] = r
 		}
 	}
 	return vec
@@ -170,6 +169,11 @@ func isEven(i int) bool {
 // NOTE: expect argument is '0' ~ '9'
 func rtoi(r rune) int {
 	return int(r - '0')
+}
+
+// NOTE: expect argument is 0 ~ 9
+func itor(i int) rune {
+	return rune('0' + i)
 }
 
 func absI(i int) int {
@@ -274,18 +278,16 @@ func newQueueInt(a []int) QueueInt {
 	return QueueInt{inner: a}
 }
 
-func (q *QueueInt) pop() (*int, error) {
+func (q *QueueInt) pop() int {
+	var v int
 	if len(q.inner) == 0 {
-		return nil, errors.New("queue is empty")
+		panic("queue is empty")
 	} else if len(q.inner) == 1 {
-		var v *int
-		v, q.inner = &q.inner[0], []int{}
-		return v, nil
+		v, q.inner = q.inner[0], []int{}
 	} else {
-		var v *int
-		v, q.inner = &q.inner[0], q.inner[1:]
-		return v, nil
+		v, q.inner = q.inner[0], q.inner[1:]
 	}
+	return v
 }
 
 func (q *QueueInt) push(v int) {
@@ -296,6 +298,15 @@ func (q *QueueInt) isEmpty() bool {
 	return len(q.inner) == 0
 }
 
+func (q *QueueInt) contains(v int) bool {
+	for _, e := range q.inner {
+		if e == v {
+			return true
+		}
+	}
+	return false
+}
+
 type QueuePair struct {
 	inner []Pair
 }
@@ -304,18 +315,22 @@ func newQueuePair(a []Pair) QueuePair {
 	return QueuePair{inner: a}
 }
 
-func (q *QueuePair) pop() (*Pair, error) {
+func (q *QueuePair) pop() Pair {
+	var v Pair
 	if len(q.inner) == 0 {
-		return nil, errors.New("queue is empty")
+		panic("queue is empty")
 	} else if len(q.inner) == 1 {
-		var v *Pair
-		v, q.inner = &q.inner[0], []Pair{}
-		return v, nil
+		v, q.inner = q.inner[0], []Pair{}
 	} else {
-		var v *Pair
-		v, q.inner = &q.inner[0], q.inner[1:]
-		return v, nil
+		v, q.inner = q.inner[0], q.inner[1:]
 	}
+	return v
+}
+
+func (q *QueuePair) popAll() []Pair {
+	v := q.inner
+	q.inner = []Pair{}
+	return v
 }
 
 func (q *QueuePair) push(v Pair) {
@@ -324,6 +339,15 @@ func (q *QueuePair) push(v Pair) {
 
 func (q *QueuePair) isEmpty() bool {
 	return len(q.inner) == 0
+}
+
+func (q *QueuePair) contains(v Pair) bool {
+	for _, e := range q.inner {
+		if e == v {
+			return true
+		}
+	}
+	return false
 }
 
 func main() {
