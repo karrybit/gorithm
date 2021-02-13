@@ -11,8 +11,28 @@ import (
 var r = bufio.NewReader(os.Stdin)
 var w = bufio.NewWriter(os.Stdout)
 
-var COORD4 = [4]Pair{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}
-var COORD8 = [8]Pair{{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}}
+var D4 = [4]Pair{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}
+var D4P = func(p Pair) [4]Pair {
+	return [4]Pair{
+		{p.y + D4[0].y, p.x + D4[0].x},
+		{p.y + D4[1].y, p.x + D4[1].x},
+		{p.y + D4[2].y, p.x + D4[2].x},
+		{p.y + D4[3].y, p.x + D4[3].x},
+	}
+}
+var D8 = [8]Pair{{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}}
+var D8P = func(p Pair) [8]Pair {
+	return [8]Pair{
+		{p.y + D8[0].y, p.x + D8[0].x},
+		{p.y + D8[1].y, p.x + D8[1].x},
+		{p.y + D8[2].y, p.x + D8[2].x},
+		{p.y + D8[3].y, p.x + D8[3].x},
+		{p.y + D8[4].y, p.x + D8[4].x},
+		{p.y + D8[5].y, p.x + D8[5].x},
+		{p.y + D8[6].y, p.x + D8[6].x},
+		{p.y + D8[7].y, p.x + D8[7].x},
+	}
+}
 
 // ---------- input handler ----------
 var MINUS = func(i int) int {
@@ -75,14 +95,14 @@ func scanSliceS(v []string, f func(s string) string) []string {
 	return v
 }
 
-func scanVectorS(rowSize, columnSize int, f func(r rune) rune) [][]rune {
+func scanVectorS(rowSize, columnSize int, f func(i, j int, r rune) rune) [][]rune {
 	vec := make([][]rune, rowSize)
 	for i := 0; i < rowSize; i++ {
 		vec[i] = make([]rune, columnSize)
 		s := scanS(nil)
 		for j, r := range s {
 			if f != nil {
-				r = f(r)
+				r = f(i, j, r)
 			}
 			vec[i][j] = r
 		}
@@ -273,6 +293,10 @@ type Pair struct {
 	y, x int
 }
 
+func (p *Pair) isInBound(height, width int) bool {
+	return p.y >= 0 && p.x >= 0 && p.y < height && p.x < width
+}
+
 type QueueInt struct {
 	inner []int
 }
@@ -282,18 +306,19 @@ func newQueueInt(a []int) QueueInt {
 }
 
 func (q *QueueInt) pop() int {
-	var v int
 	if len(q.inner) == 0 {
 		panic("queue is empty")
-	} else if len(q.inner) == 1 {
-		v, q.inner = q.inner[0], []int{}
-	} else {
-		v, q.inner = q.inner[0], q.inner[1:]
 	}
+	var v int
+	v, q.inner = q.inner[0], q.inner[1:]
 	return v
 }
 
-func (q *QueueInt) push(v int) {
+func (q *QueueInt) pushFront(v int) {
+	q.inner = append([]int{v}, q.inner...)
+}
+
+func (q *QueueInt) pushBack(v int) {
 	q.inner = append(q.inner, v)
 }
 
@@ -319,14 +344,11 @@ func newQueuePair(a []Pair) QueuePair {
 }
 
 func (q *QueuePair) pop() Pair {
-	var v Pair
 	if len(q.inner) == 0 {
 		panic("queue is empty")
-	} else if len(q.inner) == 1 {
-		v, q.inner = q.inner[0], []Pair{}
-	} else {
-		v, q.inner = q.inner[0], q.inner[1:]
 	}
+	var v Pair
+	v, q.inner = q.inner[0], q.inner[1:]
 	return v
 }
 
@@ -336,7 +358,11 @@ func (q *QueuePair) popAll() []Pair {
 	return v
 }
 
-func (q *QueuePair) push(v Pair) {
+func (q *QueuePair) pushFront(v Pair) {
+	q.inner = append([]Pair{v}, q.inner...)
+}
+
+func (q *QueuePair) pushBack(v Pair) {
 	q.inner = append(q.inner, v)
 }
 
