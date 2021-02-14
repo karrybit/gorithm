@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/list"
 	"fmt"
 	"math"
 	"os"
@@ -297,86 +298,86 @@ func (p *Pair) isInBound(height, width int) bool {
 	return p.y >= 0 && p.x >= 0 && p.y < height && p.x < width
 }
 
-type QueueInt struct {
-	inner []int
+type IntQueue struct {
+	inner *list.List
 }
 
-func newQueueInt(a []int) QueueInt {
-	return QueueInt{inner: a}
+func newIntQueue() IntQueue {
+	return IntQueue{inner: list.New()}
 }
 
-func (q *QueueInt) pop() int {
-	if len(q.inner) == 0 {
-		panic("queue is empty")
+func (q *IntQueue) popFront() int {
+	e := q.inner.Front()
+	q.inner.Remove(e)
+	return e.Value.(int)
+}
+
+func (q *IntQueue) popBack() int {
+	e := q.inner.Back()
+	q.inner.Remove(e)
+	return e.Value.(int)
+}
+
+func (q *IntQueue) popAll() []int {
+	pairs := make([]int, q.inner.Len())
+	l := q.inner.Len()
+	for i := 0; i < l; i++ {
+		pairs[i] = q.popFront()
 	}
-	var v int
-	v, q.inner = q.inner[0], q.inner[1:]
-	return v
+	return pairs
 }
 
-func (q *QueueInt) pushFront(v int) {
-	q.inner = append([]int{v}, q.inner...)
+func (q *IntQueue) pushFront(v int) {
+	q.inner.PushFront(v)
 }
 
-func (q *QueueInt) pushBack(v int) {
-	q.inner = append(q.inner, v)
+func (q *IntQueue) pushBack(v int) {
+	q.inner.PushBack(v)
 }
 
-func (q *QueueInt) isEmpty() bool {
-	return len(q.inner) == 0
+func (q *IntQueue) isEmpty() bool {
+	return q.inner.Len() == 0
 }
 
-func (q *QueueInt) contains(v int) bool {
-	for _, e := range q.inner {
-		if e == v {
-			return true
-		}
+type PairQueue struct {
+	inner *list.List
+}
+
+func newPairQueue() PairQueue {
+	return PairQueue{inner: list.New()}
+}
+
+func (q *PairQueue) popFront() Pair {
+	e := q.inner.Front()
+	q.inner.Remove(e)
+	return e.Value.(Pair)
+}
+
+func (q *PairQueue) popBack() Pair {
+	e := q.inner.Back()
+	q.inner.Remove(e)
+	return e.Value.(Pair)
+}
+
+func (q *PairQueue) popAll() []Pair {
+	pairs := make([]Pair, q.inner.Len())
+	l := q.inner.Len()
+	for i := 0; i < l; i++ {
+		pairs[i] = q.popFront()
 	}
-	return false
+	return pairs
 }
 
-type QueuePair struct {
-	inner []Pair
+func (q *PairQueue) pushFront(v Pair) {
+	q.inner.PushFront(v)
 }
 
-func newQueuePair(a []Pair) QueuePair {
-	return QueuePair{inner: a}
+func (q *PairQueue) pushBack(v Pair) {
+	q.inner.PushBack(v)
 }
 
-func (q *QueuePair) pop() Pair {
-	if len(q.inner) == 0 {
-		panic("queue is empty")
-	}
-	var v Pair
-	v, q.inner = q.inner[0], q.inner[1:]
-	return v
-}
-
-func (q *QueuePair) popAll() []Pair {
-	v := q.inner
-	q.inner = []Pair{}
-	return v
-}
-
-func (q *QueuePair) pushFront(v Pair) {
-	q.inner = append([]Pair{v}, q.inner...)
-}
-
-func (q *QueuePair) pushBack(v Pair) {
-	q.inner = append(q.inner, v)
-}
-
-func (q *QueuePair) isEmpty() bool {
-	return len(q.inner) == 0
-}
-
-func (q *QueuePair) contains(v Pair) bool {
-	for _, e := range q.inner {
-		if e == v {
-			return true
-		}
-	}
-	return false
+func (q *PairQueue) isEmpty() bool {
+	return q.inner.Len() == 0
 }
 
 func main() {
