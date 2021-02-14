@@ -294,8 +294,12 @@ type Pair struct {
 	y, x int
 }
 
+func isInBound(height, width, y, x int) bool {
+	return 0 <= y && y < height && 0 <= x && x < width
+}
+
 func (p *Pair) isInBound(height, width int) bool {
-	return p.y >= 0 && p.x >= 0 && p.y < height && p.x < width
+	return isInBound(height, width, p.y, p.x)
 }
 
 type IntQueue struct {
